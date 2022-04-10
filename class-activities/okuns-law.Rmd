@@ -1,0 +1,35 @@
+---
+title: 'Week 2: Lecture - Building a model'
+author: "Halina Do-Linh"
+date: "4/7/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+librarian::shelf(tidyverse)
+```
+
+# Model of US quaterly data from 1947 - 2002
+
+```{r}
+# creating function of okun's law
+# x is a constant and represents the intercept
+# y is a constant and represent the slope
+# change_ur is change in unemployment rate
+okun_law = function(x = 0.856, y = -1.827, change_ur){
+  
+  change_gnp = x - y * (change_ur)
+  
+  return(change_gnp)
+}
+```
+
+
+```{r}
+# testing function of okun's law
+gdp_03 <- okun_law(change_ur = 3)
+gdp_03
+```
+
