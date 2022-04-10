@@ -17,7 +17,7 @@ librarian::shelf(
 )
 
 # read in data txt file
-# had to add "d" as a dummy column to get the data lined up correctly
+# had to add "d" in clim.txt as dummy column to get data lined up correctly
 # wy = water year (oct 1 = sept 30)
 # wyd = water year day
 clim_data <- read_table(here("hw/data/clim.txt")) %>% 
@@ -65,10 +65,24 @@ Questions:
 - we're only using tmin? If we're looking at the formula? I don't see Tx (max temp)?
 
 ```{r}
-almond_yield <- function(temp_min, precip){
+almond_yield <- function(temp_max, temp_min, precip){
   
-  ((-0.015 * temp_min) - (-0.0046 * temp_min^2)) - ((0.07 * precip) + (0.0043 * precip^2)) + 0.28
+  ((-0.015 * temp_max) - (-0.0046 * temp_min^2)) - ((0.07 * precip) + (0.0043 * precip^2)) + 0.28
 }
+```
+
+
+```{r}
+# 2000 test
+clim_data_2000 <- clim_data %>% 
+  filter(year == "2000") %>% 
+  mutate(mean_tmax_c = mean(tmax_c)) %>% 
+  mutate(mean_tmin_c = mean(tmin_c)) %>% 
+  mutate(mean_precip_mm = mean(precip))
+
+ay_2000 <- almond_yield(temp_max = 21.61513, 
+                        temp_min = 12.18142,
+                        precip = 1.702128)
 ```
 
 
