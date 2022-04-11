@@ -103,9 +103,14 @@ precip_jan <- clim_data %>%
 # 2001: 159.51
 # 2002: 0.24
 
-yield_2000 <- almond_yield(temp = temp_feb$mean_tmin_c[[12]], precip = precip_jan$mean_precip[[12]])
-yield_2001 <- almond_yield(temp = temp_feb$mean_tmin_c[[13]], precip = precip_jan$mean_precip[[13]])
-yield_2002 <- almond_yield(temp = temp_feb$mean_tmin_c[[14]], precip = precip_jan$mean_precip[[14]])
+yield_2000 <- almond_yield(temp = temp_feb$mean_tmin_c[[12]], 
+                           precip = precip_jan$mean_precip[[12]])
+
+yield_2001 <- almond_yield(temp = temp_feb$mean_tmin_c[[13]], 
+                           precip = precip_jan$mean_precip[[13]])
+
+yield_2002 <- almond_yield(temp = temp_feb$mean_tmin_c[[14]], 
+                           precip = precip_jan$mean_precip[[14]])
 ```
 
 
