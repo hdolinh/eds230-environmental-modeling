@@ -13,7 +13,8 @@ knitr::opts_chunk$set(echo = TRUE)
 librarian::shelf(
   tidyverse,
   here,
-  janitor
+  janitor,
+  patchwork
 )
 
 # read in data txt file
@@ -111,7 +112,55 @@ yield_2001 <- almond_yield(temp = temp_feb$mean_tmin_c[[13]],
 
 yield_2002 <- almond_yield(temp = temp_feb$mean_tmin_c[[14]], 
                            precip = precip_jan$mean_precip[[14]])
+
+yield_2000
+yield_2001
+yield_2002
 ```
 
 
+```{r}
+# join feb and jan data frames
+joined_tempfeb_precipjan <- left_join(precip_jan, temp_feb, by = "year")
 
+# cleaned joined df
+joined_clean <- joined_tempfeb_precipjan %>% 
+  select(-c(month.x, month.y)) %>% 
+  rename(mean_precip_jan = mean_precip,
+         mean_tmin_c_feb = mean_tmin_c)
+```
+
+
+```{r}
+joined_clean_almond_yield <- joined_clean %>% 
+  mutate(almond_yield_pct = almond_yield(temp = mean_tmin_c_feb,
+                                        precip = mean_precip_jan))
+
+almond_plot <- ggplot() +
+  geom_line(data = joined_clean_almond_yield, aes(x = year, y = almond_yield_pct),
+            color = "brown") +
+  labs(title = "",
+       x = "Year",
+       y = "% Anomaly") +
+  theme_minimal() 
+
+precip_plot <- ggplot() +
+  geom_line(data = joined_clean_almond_yield, aes(x = year, y = mean_precip_jan),
+            color = "cyan4") +
+  labs(x = "Year",
+       y = "Precip (mm)") +
+  theme_minimal()
+
+temp_plot <- ggplot() +
+  geom_line(data = joined_clean_almond_yield, aes(x = year, y = mean_tmin_c_feb), 
+            color = "red") +
+  labs(x = "Year",
+       y = "Temp (\u00B0C)") +
+  theme_minimal()
+  
+almond_plot / precip_plot / temp_plot
+```
+
+# Summary
+
+We found the annual percent anomaly yield for almonds based on the model provided by Lobell et al. 2006 for the years 1988-2010. Based on the function provided by the paper, we see that the year 1995 had a result of ~2000% increase in percent anomaly yield for almonds. Through the time period we see other slight spikes in percent anomaly yield of ~250% - 600% for the years 1997, 2005, and 2008. We then added the precipitation data for the same years, and saw that there were spikes that correspond to the spikes in almond anomalies. The temperature anomalies did not line up as precisely as the precipitation anomalies did. There are similar spikes in the years that had larger almond yields, however there are some spikes in temperature that did not line up with increased almond yield. For example, the year 2000 had a high temperature, but did not have an increase in almond production. When looking at these three plots we can assume that precipitation has a large effect on almond yield compared to temperature. Although we can not rule out that temperature might have an effect on precipitation.   
