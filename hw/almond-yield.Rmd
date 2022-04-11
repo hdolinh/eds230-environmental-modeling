@@ -62,27 +62,51 @@ Three answers to check your model against:
 Questions:
 - did anyone feel like the data was read in wrong?
 - tmax_c is year?
-- we're only using tmin? If we're looking at the formula? I don't see Tx (max temp)?
 
 ```{r}
-almond_yield <- function(temp_max, temp_min, precip){
+# need feb and jan data
+almond_yield <- function(temp, precip,
+                         temp_min_coeff_1 = -0.015, 
+                         temp_min_coeff_2 = -0.0046, 
+                         percip_coeff_1 = -0.07, 
+                         percip_coeff_2 = 0.0043, 
+                         intercept = 0.28){
   
-  ((-0.015 * temp_max) - (-0.0046 * temp_min^2)) - ((0.07 * precip) + (0.0043 * precip^2)) + 0.28
-}
+  # calculating almond yield
+  yield = (temp_min_coeff_1 * temp) + (temp_min_coeff_2 * temp^2) +
+    (percip_coeff_1 * precip) + (percip_coeff_2 * precip^2) + intercept
+  
+  # results
+  return(yield)
+  
+  } # EO function
 ```
 
 
 ```{r}
-# 2000 test
-clim_data_2000 <- clim_data %>% 
-  filter(year == "2000") %>% 
-  mutate(mean_tmax_c = mean(tmax_c)) %>% 
-  mutate(mean_tmin_c = mean(tmin_c)) %>% 
-  mutate(mean_precip_mm = mean(precip))
-
-ay_2000 <- almond_yield(temp_max = 21.61513, 
-                        temp_min = 12.18142,
-                        precip = 1.702128)
+# necessary climate variables
+temp_feb <- clim_data %>% 
+  group_by(month, year) %>% 
+  summarize(mean_tmin_c = mean(tmin_c)) %>% 
+  filter(month == 2)
+  
+precip_jan <- clim_data %>% 
+  group_by(month, year) %>% 
+  summarize(mean_precip = sum(precip)) %>% 
+  filter(month == 1) 
 ```
+
+
+```{r}
+## ANSWERS ##
+# 2000: 9.59
+# 2001: 159.51
+# 2002: 0.24
+
+yield_2000 <- almond_yield(temp = temp_feb$mean_tmin_c[[12]], precip = precip_jan$mean_precip[[12]])
+yield_2001 <- almond_yield(temp = temp_feb$mean_tmin_c[[13]], precip = precip_jan$mean_precip[[13]])
+yield_2002 <- almond_yield(temp = temp_feb$mean_tmin_c[[14]], precip = precip_jan$mean_precip[[14]])
+```
+
 
 
