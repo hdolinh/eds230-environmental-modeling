@@ -1,0 +1,129 @@
+---
+title: "Almond yield as a function"
+author: "Allie Cole, Halina Do-Linh, Jake Eisaguirre"
+date: '`r format(Sys.time(), "%m/%d/%Y")`'
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+# set up
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
+
+# attached packages
+librarian::shelf(
+  tidyverse,
+  here,
+  janitor,
+  patchwork
+)
+```
+
+## Assignment
+
+For assignment two we built the almond model from Lobell et al. 2006 in R. Our function can be found in our R script `almond_yield.R`.
+
+## Read in data
+
+```{r, message=FALSE, results='hide'}
+# read in data txt file
+# had to add "d" in clim.txt as dummy column to get data lined up correctly
+# wy = water year (oct 1 = sept 30)
+# wyd = water year day
+clim_data <- read_table(here("hw/data/clim.txt")) %>% 
+  clean_names() %>% 
+  select(-d) # dropped "d" aka index column
+
+# source almond yield function
+source("almond_yield.R")
+```
+
+## Required subsetting
+
+In the Lobell et al. 2006 paper, they use January precipitation (mm) and February temperature `r "(\u00B0C)"` for their function. We subsetted the original data, to make sure we have those climate variables.
+
+```{r}
+# necessary climate variables
+temp_feb <- clim_data %>% 
+  group_by(month, year) %>% 
+  summarize(mean_tmin_c = mean(tmin_c)) %>% 
+  filter(month == 2)
+  
+precip_jan <- clim_data %>% 
+  group_by(month, year) %>% 
+  summarize(mean_precip = sum(precip)) %>% 
+  filter(month == 1) 
+```
+
+\newpage
+
+Before we created our plot, we checked our model's outputs with Professor Tague's provided answers: 
+
+- 2000: 9.59
+- 2001: 159.51
+- 2002: 0.24
+
+```{r}
+yield_2000 <- almond_yield(temp = temp_feb$mean_tmin_c[[12]], 
+                           precip = precip_jan$mean_precip[[12]])
+yield_2001 <- almond_yield(temp = temp_feb$mean_tmin_c[[13]], 
+                           precip = precip_jan$mean_precip[[13]])
+yield_2002 <- almond_yield(temp = temp_feb$mean_tmin_c[[14]], 
+                           precip = precip_jan$mean_precip[[14]])
+```
+
+\textbf{Results:} We were able to obtain the same results for the years 2000 (`r round(yield_2000, 2)`), 2001 (`r round(yield_2001, 2)`), and 2002 (`r round(yield_2002, 2)`).
+
+## Our plot of almond yield percent anomaly, percipitation, and temperature
+
+To create our plot first we needed to join the subsetted data frames.
+
+```{r}
+# join feb and jan data frames
+joined_tempfeb_precipjan <- left_join(precip_jan, temp_feb, by = "year")
+
+# cleaned joined df
+joined_clean <- joined_tempfeb_precipjan %>% 
+  select(-c(month.x, month.y)) %>% 
+  rename(mean_precip_jan = mean_precip,
+         mean_tmin_c_feb = mean_tmin_c)
+```
+
+Then we calculated the annual almond yield for the years 1988-2010 and added this our joined data frame. After that, we created our plots.
+
+```{r, fig.width=6, fig.height=4, fig.cap="Almond percent anomaly, percipitation (mm), and temperature (\u00B0C) from 1988-2010."}
+# added almond yield to df
+joined_clean_almond_yield <- joined_clean %>% 
+  mutate(almond_yield_pct = almond_yield(temp = mean_tmin_c_feb,
+                                        precip = mean_precip_jan))
+# plot of % anomaly
+almond_plot <- ggplot() +
+  geom_line(data = joined_clean_almond_yield, aes(x = year, y = almond_yield_pct),
+            color = "brown") +
+  labs(title = "",
+       x = "Year",
+       y = "% Anomaly") +
+  theme_minimal() 
+# plot of precip
+precip_plot <- ggplot() +
+  geom_line(data = joined_clean_almond_yield, aes(x = year, y = mean_precip_jan),
+            color = "cyan4") +
+  labs(x = "Year",
+       y = "Precip (mm)") +
+  theme_minimal()
+# plot of temp
+temp_plot <- ggplot() +
+  geom_line(data = joined_clean_almond_yield, aes(x = year, y = mean_tmin_c_feb), 
+            color = "red") +
+  labs(x = "Year",
+       y = "Temp (\u00B0C)") +
+  theme_minimal()
+  
+almond_plot / precip_plot / temp_plot
+```
+
+### Summary
+
+We found the annual percent anomaly yield for almonds based on the model provided by Lobell et al. 2006 for the years 1988-2010. Based on the function provided by the paper, we see that the year 1995 had a result of ~2000% increase in percent anomaly yield for almonds. Through the time period we see other slight spikes in percent anomaly yield of ~250% - 600% for the years 1997, 2005, and 2008. We then added the precipitation data for the same years, and saw that there were spikes that correspond to the spikes in almond anomalies. The temperature anomalies did not line up as precisely as the precipitation anomalies did. There are similar spikes in the years that had larger almond yields, however there are some spikes in temperature that did not line up with increased almond yield. For example, the year 2000 had a high temperature, but did not have an increase in almond production. When looking at these three plots we can assume that precipitation has a large effect on almond yield compared to temperature. Although we can not rule out that temperature might have an effect on precipitation. 
+
