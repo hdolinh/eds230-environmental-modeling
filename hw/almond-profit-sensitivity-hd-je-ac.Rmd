@@ -26,7 +26,8 @@ source(here("hw/functions/almond_profit.R"))
 source(here("hw/functions/compute_npv.R"))
 
 # read in data
-almond_yield_data <- read_csv(here("hw/data/annual_almond_yield.csv"))
+almond_yield_data <- read_csv(here("hw/data/annual_almond_yield.csv")) %>% 
+  select(-c(mean_precip_jan, mean_tmin_c_feb))
 ```
 
 # Assignment 3
@@ -35,7 +36,7 @@ almond_yield_data <- read_csv(here("hw/data/annual_almond_yield.csv"))
 
 ```{r}
 # test model
-# idk if any of the results are reasonable...
+
 profit_almond = almond_profit(almond_yield_anomaly = almond_yield_data$almond_yield_pct,
                               year = almond_yield_data$year,
                               price = 10,
@@ -45,24 +46,35 @@ profit_almond = almond_profit(almond_yield_anomaly = almond_yield_data$almond_yi
 2. Do a simple informal sensitivity analysis of almond yield profit using at least 2 parameters
 
 ```{r}
-deviation_price = 0.1
-base_price = 1
+deviation_price = 1
+base_price = 10
 
-deviatio
+deviation_discount = 0.1
+base_discount = 0.5
 
-price_thresh = runif(min = base_price - deviation_price * base_price,
-                     max = base_price + deviation_price * base_price,
-                      n = 1000)
+price = runif(min = 1,
+              max = base_price + deviation_price * base_price,
+              n = 300)
 
-discount_thresh = runif(min = base_price - deviation_price * base_price,
-                     max = base_price + deviation_price * base_price,
-                      n = 1000)
+discount = runif(min = 1,
+                 max = deviation_price + deviation_discount * base_discount,
+                 n = 300)
 
-profit_almond_1 <- price_thresh %>% 
-  map(~almond_profit(almond_yield_anomaly = almond_yield_data$almond_yield_pct,
-                              year = almond_yield_data$year,
-                              price = .x,
-                              discount = 0.12))
+parms <- cbind.data.frame(price, discount) 
+
+profit_almond_1 =  parms %>% pmap(almond_profit,
+                                  almond_yield_anomaly = almond_yield_data$almond_yield_pct,
+                                  year = almond_yield_data$year)
+
+
+
+mean_price = map(profit_almond_1, c("net"))
+
+clean_data <- as.data.frame(mean_price) %>% 
+  mutate(year = c(1989:2010)) %>% 
+  pivot_longer(cols = starts_with("c."), values_to = "net") %>% 
+  select(!(name)) %>% 
+  filter(net >0) # no farmer would give money to a customer
 
 ```
 
@@ -70,6 +82,15 @@ profit_almond_1 <- price_thresh %>%
 4. Output the graph as a stand alone image (pdf, tiff, jpeg)
 
 ```{r}
+
+ggplot(clean_data, aes(as.factor(year), net)) +
+  geom_boxplot() +
+  labs(title = "Almond Profit from 1998-2010") +
+  xlab( "Year") +
+  ylab("Net Profit $") +
+  theme_minimal()
+
+ggsave(here("almond_profit_plot.png"))
 
 ```
 
