@@ -45,6 +45,24 @@ profit_almond = almond_profit(almond_yield_anomaly = almond_yield_data$almond_yi
 2. Do a simple informal sensitivity analysis of almond yield profit using at least 2 parameters
 
 ```{r}
+deviation_price = 0.1
+base_price = 1
+
+deviatio
+
+price_thresh = runif(min = base_price - deviation_price * base_price,
+                     max = base_price + deviation_price * base_price,
+                      n = 1000)
+
+discount_thresh = runif(min = base_price - deviation_price * base_price,
+                     max = base_price + deviation_price * base_price,
+                      n = 1000)
+
+profit_almond_1 <- price_thresh %>% 
+  map(~almond_profit(almond_yield_anomaly = almond_yield_data$almond_yield_pct,
+                              year = almond_yield_data$year,
+                              price = .x,
+                              discount = 0.12))
 
 ```
 
