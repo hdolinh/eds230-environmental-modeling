@@ -1,0 +1,57 @@
+---
+title: 'Assignment 3: Almond Profit Sensitivity'
+author: "Allie Cole, Halina Do-Linh, Jake Eisaguirre"
+date: '`r format(Sys.time(), "%m/%d/%Y")`'
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# set up
+knitr::opts_chunk$set(echo = TRUE) #,
+                      #message = FALSE,
+                      #warning = FALSE)
+
+# attached packages
+librarian::shelf(
+  tidyverse,
+  here,
+  janitor,
+  patchwork
+)
+
+# source necessary functions
+source(here("hw/functions/almond_profit.R"))
+source(here("hw/functions/compute_npv.R"))
+
+# read in data
+almond_yield_data <- read_csv(here("hw/data/annual_almond_yield.csv"))
+```
+
+# Assignment 3
+
+1. Develop a profit model for your almond yield (you can make this up - think about what the parameters would be)
+
+```{r}
+# test model
+# idk if any of the results are reasonable...
+profit_almond = almond_profit(almond_yield_anomaly = almond_yield_data$almond_yield_pct,
+                              year = almond_yield_data$year,
+                              price = 10,
+                              discount = 0.12)
+```
+
+2. Do a simple informal sensitivity analysis of almond yield profit using at least 2 parameters
+
+```{r}
+
+```
+
+3. Create a single graph of the results - you can decide what is the most meaningful graph
+4. Output the graph as a stand alone image (pdf, tiff, jpeg)
+
+```{r}
+
+```
+
