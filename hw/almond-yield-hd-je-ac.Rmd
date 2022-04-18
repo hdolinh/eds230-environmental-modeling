@@ -127,3 +127,11 @@ almond_plot / precip_plot / temp_plot
 
 We found the annual percent anomaly yield for almonds based on the model provided by Lobell et al. 2006 for the years 1988-2010. Based on the function provided by the paper, we see that the year 1995 had a result of ~2000% increase in percent anomaly yield for almonds. Through the time period we see other slight spikes in percent anomaly yield of ~250% - 600% for the years 1997, 2005, and 2008. We then added the precipitation data for the same years, and saw that there were spikes that correspond to the spikes in almond anomalies. The temperature anomalies did not line up as precisely as the precipitation anomalies did. There are similar spikes in the years that had larger almond yields, however there are some spikes in temperature that did not line up with increased almond yield. For example, the year 2000 had a high temperature, but did not have an increase in almond production. When looking at these three plots we can assume that precipitation has a large effect on almond yield compared to temperature. Although we can not rule out that temperature might have an effect on precipitation. 
 
+# Post Assignment 
+
+Save `joined_clean_almond_yield` as a csv to use in assignment 3
+
+```{r}
+write_csv(joined_clean_almond_yield, here("hw/data/annual_almond_yield.csv"))
+```
+
