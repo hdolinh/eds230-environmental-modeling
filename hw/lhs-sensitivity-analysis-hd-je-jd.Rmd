@@ -1,8 +1,8 @@
 ---
 title: "LHS Sensitivity Analysis"
-author: "Halina Do-Linh"
-date: '2022-04-21'
-output: html_document
+author: "Joe Decesaro, Halina Do-Linh, Jake Eisaguirre"
+date: '`r format(Sys.time(), "%m/%d/%Y")`'
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
