@@ -12,8 +12,9 @@ knitr::opts_chunk$set(echo = TRUE)
 librarian::shelf(
   tidyverse,
   here,
-  janitor,
-  patchwork
+  pse,
+  purrr,
+  sensitivity
 )
 
 # functions
@@ -28,15 +29,65 @@ source(here("hw/functions/cat.R"))
 
 ```{r}
 # test function works
-cat(zm = 400, h = 200, v = 5)
+cat(h = 200, v = 5)
 ```
 
-2. Run your model
+2. Run your model for a forest that is 10 m high (the accuracy of that measurement is +/- 0.5 m ). Windspeeds v in this region are normally distributed with a mean of 250 cm/s with a standard deviation of 30 cm/s.
+
+Come up with a single estimate of atmospheric conductance for this forest.
 
 ```{r}
-cat()
+cat(h = 1000, v = 250)
 ```
 
+3. Sensitivity analysis for forest
+
+```{r}
+# parameters we are considering
+factors = c("h", "kd", "k0", "v")
+```
+
+
+```{r}
+nsets = 100
+```
+
+
+```{r}
+q = c("qunif",  # h
+      "qnorm",  # kd
+      "qnorm",  # k0
+      "qnorm") # v
+
+q.arg = list(list(min = 950, max = 1050), # h
+             list(mean = .7, sd = .007), # kd
+             list(mean = .1, sd = .001), # k0
+             list(mean = 250, sd = 30)) # v
+```
+
+a. use LHS to generate parameter values for the 4 parameters
+
+```{r}
+sens_cat <- LHS(model = NULL,
+                factors = factors,
+                N = nsets,
+                q = q,
+                q.arg = q.arg)
+
+sens_parms <- get.data(sens_cat)
+```
+
+b. run you atmospheric conductance model for these parameters and return aerodynamic conductances
+
+```{r}
+aero_conduct <- sens_parms %>% pmap(cat)
+```
+
+c. Plot conductance estimates in a way that accounts for parameter uncertainty
+
+```{r}
+aero_conduct_df <- aero_conduct %>% map_dfr(`[`,c("conductances"))
+```
 
 
 
