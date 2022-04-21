@@ -22,10 +22,21 @@ source(here("hw/functions/cat.R"))
 
 # Assignment 3
 
-Code a function to compute atmospheric conductance Cat (how easily vapor diffuses from vegetation surfaces). 
+1. Code a function to compute atmospheric conductance Cat (how easily vapor diffuses from vegetation surfaces). 
+
+**See `cat.R` script**.
 
 ```{r}
 # test function works
-cat(zm = 4, h = 2, v = 5)
+cat(zm = 400, h = 200, v = 5)
 ```
+
+2. Run your model
+
+```{r}
+cat()
+```
+
+
+
 
