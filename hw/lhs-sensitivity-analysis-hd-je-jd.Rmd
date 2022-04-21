@@ -86,8 +86,17 @@ aero_conduct <- sens_parms %>% pmap(cat)
 c. Plot conductance estimates in a way that accounts for parameter uncertainty
 
 ```{r}
-aero_conduct_df <- aero_conduct %>% map_dfr(`[`,c("conductances"))
+aero_conduct_df <- do.call(rbind.data.frame, aero_conduct) 
+
+colnames(aero_conduct_df) <- c("V1")
 ```
 
+```{r}
+sens_conduct = pse::tell(sens_cat, t(as.matrix(aero_conduct_df)))
+```
+
+```{r}
+pse::plotscatter(sens_conduct)
+```
 
 
