@@ -11,13 +11,15 @@
 #'
 #' @examples cat(zm = 400, h = 200, v = 5)
 #' 
-cat <- function(zm, h, v, kd = 0.7, k0 = 0.1){
+cat <- function(h, v, kd = 0.7, k0 = 0.1){
   
+  zm <- 200 + h
   # creating zd and z0
   zd <- kd * h
   z0 <- k0 * h
   # calculating atmospheric conductance
   cat <- v / (6.25 * log((zm - zd) / z0)^2)
+  
   
   # return cat
   return(cat)
