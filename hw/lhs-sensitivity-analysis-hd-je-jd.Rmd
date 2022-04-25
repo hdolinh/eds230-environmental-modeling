@@ -14,7 +14,8 @@ librarian::shelf(
   here,
   pse,
   purrr,
-  sensitivity
+  sensitivity,
+  latex2exp
 )
 
 # functions
@@ -77,10 +78,11 @@ sens_cat <- LHS(model = NULL,
 sens_parms <- get.data(sens_cat)
 ```
 
-b. run you atmospheric conductance model for these parameters and return aerodynamic conductances
+b. run you atmospheric conductance model for these parameters and return aerodynamic conductances. We used `purrr.`
 
 ```{r}
 aero_conduct <- sens_parms %>% pmap(cat)
+head(aero_conduct)
 ```
 
 c. Plot conductance estimates in a way that accounts for parameter uncertainty
@@ -91,12 +93,36 @@ aero_conduct_df <- do.call(rbind.data.frame, aero_conduct)
 colnames(aero_conduct_df) <- c("V1")
 ```
 
+
+```{r}
+ggplot(data = aero_conduct_df, aes(V1)) +
+  geom_boxplot() +
+  labs(x = "Atmospheric conductances 1/(cm*s)")
+```
+
+
+d. Plot conductance estimates against each of our parameters
+
 ```{r}
 sens_conduct = pse::tell(sens_cat, t(as.matrix(aero_conduct_df)))
 ```
 
 ```{r}
-pse::plotscatter(sens_conduct)
+pse::plotscatter(sens_conduct,
+                 ylab = "Conductance 1/(cm*s)")
 ```
 
+e. Estimate the the Partial Rank Correlation Coefficients
+
+```{r}
+# plot partial rank correlation coefficients
+pse::plotprcc(sens_conduct)
+
+# numeric values of partial rank correlation coefficients
+sens_conduct$prcc
+```
+
+f. Discuss what your results tell you about how aerodynamic conductance? What does it suggest about what you should focus on if you want to reduce uncertainty in aerodynamic conductance estimates? Does this tell you anything about the sensitivity of plant water use to climate change?
+
+**Answer:** Our results tell us that aerodynamic conductance is most sensitive to the velocity of windspeed. If we want to reduce uncertainty in aerodynamic conductance estimates then we need to focus on reducing variability in windspeed. This tells us that as climate change effects increase, this may result in higher windspeeds, which impacts conductance which ultimately impacts plant water use.
 

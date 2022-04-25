@@ -9,7 +9,7 @@
 #' @return
 #' @export
 #'
-#' @examples cat(zm = 400, h = 200, v = 5)
+#' @examples cat(h = 200, v = 5)
 #' 
 cat <- function(h, v, kd = 0.7, k0 = 0.1){
   
