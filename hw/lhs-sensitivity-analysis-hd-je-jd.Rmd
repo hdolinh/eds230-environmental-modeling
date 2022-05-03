@@ -15,7 +15,8 @@ librarian::shelf(
   pse,
   purrr,
   sensitivity,
-  latex2exp
+  latex2exp,
+  sensitivity
 )
 
 # functions
@@ -125,4 +126,61 @@ sens_conduct$prcc
 f. Discuss what your results tell you about how aerodynamic conductance? What does it suggest about what you should focus on if you want to reduce uncertainty in aerodynamic conductance estimates? Does this tell you anything about the sensitivity of plant water use to climate change?
 
 **Answer:** Our results tell us that aerodynamic conductance is most sensitive to the velocity of windspeed. If we want to reduce uncertainty in aerodynamic conductance estimates then we need to focus on reducing variability in windspeed. This tells us that as climate change effects increase, this may result in higher windspeeds, which impacts conductance which ultimately impacts plant water use.
+
+## Sobul practice
+
+```{r}
+nsets = 100
+```
+
+
+```{r}
+
+h = runif(min = 950, max = 1050, n = nsets) # h
+kd = rnorm(mean = .7, sd = .007, n = nsets) # kd
+k0 = rnorm(mean = .1, sd = .001, n = nsets) # k0
+v = rnorm(mean = 250, sd = 30, n = nsets)# v
+
+X1 = cbind.data.frame(h, kd, k0, v)
+
+h = runif(min = 950, max = 1050, n = nsets) # h
+kd = rnorm(mean = .7, sd = .007, n = nsets) # kd
+k0 = rnorm(mean = .1, sd = .001, n = nsets) # k0
+v = rnorm(mean = 250, sd = 30, n = nsets) # v
+
+X2 = cbind.data.frame(h, kd, k0, v)
+
+
+```
+
+#make sobol object
+```{r}
+
+sense_catm_Sobol <- sobolSalt(model = NULL, X1, X2,  nboot = 100)
+
+```
+
+```{r}
+parms <- as.data.frame(sense_catm_Sobol$X)
+
+
+colnames(parms)= colnames(X1)
+res = pmap_dbl(parms, cat)
+
+
+sense_catm_Sobol = sensitivity::tell(sense_catm_Sobol,res, res.names="ga")
+```
+
+```{r}
+
+row.names(sens_Catm_Sobol$S) = colnames(parms)
+sens_Catm_Sobol$S
+```
+
+```{r}
+both = cbind.data.frame(parms, gs=sens_Catm_Sobol$y)
+
+# look at response of conductance to the two most important variables
+ggplot(both, aes(v,gs, col=h))+geom_point()+labs(y="Conductance (mm/s)", x="Windspeed")
+```
 
