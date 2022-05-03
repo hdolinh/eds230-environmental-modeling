@@ -22,7 +22,7 @@ librarian::shelf(
 source(here("hw/functions/cat.R"))
 ```
 
-# Assignment 3
+# Assignment 4
 
 1. Code a function to compute atmospheric conductance Cat (how easily vapor diffuses from vegetation surfaces). 
 

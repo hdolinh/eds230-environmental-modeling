@@ -1,0 +1,21 @@
+---
+title: "Assignment 5"
+author: "Joe Decesaro, Halina Do-Linh, Jake Eisaguirre"
+date: '`r format(Sys.time(), "%m/%d/%Y")`'
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# attached packages
+librarian::shelf(
+  tidyverse,
+  here,
+  pse,
+  purrr,
+  sensitivity
+)
+```
+
+#

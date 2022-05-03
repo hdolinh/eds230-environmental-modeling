@@ -1,0 +1,36 @@
+---
+title: "Diffusion"
+author: "Alex Clippinger, Halina Do-Linh, Sydney Rilum"
+date: '`r format(Sys.time(), "%m/%d/%Y")`'
+output: pdf_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(deSolve)
+library(here)
+```
+
+# Initial plot from class
+
+```{r}
+source(here::here("hw/functions/diffusion.R"))
+
+# Initial example
+res=diff1(initialC=10,nx=10,dx=1,nt=10,dt=30,D=0.006,area=1)
+filled.contour(t(res$conc), xlab="Distance", ylab="Time")
+```
+
+# Example after changing the diffusivity parameter and time
+
+```{r}
+# changing diffusivity
+res4=diff1(initialC=10,nx=10,dx=1,nt=10,dt=30,D=0.04,area=1)
+filled.contour(t(res4$conc), xlab="Distance", ylab="Time")
+# changing time step
+res5=diff1(initialC=10,nx=10,dx=1,nt=10,dt=10,D=0.04,area=1)
+filled.contour(t(res5$conc), xlab="Distance", ylab="Time")
+```
+
